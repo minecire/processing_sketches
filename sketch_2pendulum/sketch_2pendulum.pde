@@ -1,0 +1,82 @@
+float r1 = 180;
+float r2 = 120;
+float m1 = 20;
+float m2 = 0.2;
+float a1 = PI;
+float a2 = PI+0.001;
+float a1v = 0;
+float a2v = 0;
+float a1a = 0;
+float a2a = 0;
+float g = 0.2;
+float px2;
+float py2;
+float px1;
+float py1;
+float cx;
+float cy;
+float hue = 0;
+PGraphics canvas;
+
+void setup() {
+  colorMode(RGB);
+  frameRate(1200);
+  cx = width/2;
+  cy = height/2;
+  size(600,600);
+  strokeWeight(2);
+  canvas = createGraphics(900,600);
+  canvas.beginDraw();
+  canvas.background(0);
+  canvas.endDraw();
+  canvas.stroke(0);
+  canvas.strokeWeight(1);
+}
+void draw(){
+  hue += 0.001;
+  hue = hue % 255;
+  float num1 = -g * (2 * m1 + m2) * sin(a1);
+  float num2 = -m2 * g * sin(a1-2*a2);
+  float num3 = -2*sin(a1-a2)*m2;
+  float num4 = a2v*a2v*r2+a1v*a1v*r1*cos(a1-a2);
+  float den = r1 * (2*m1+m2-m2*cos(2*a1-2*a2));
+  a1a = (num1 + num2 + num3*num4)/ den;
+  
+  num1 = 2*sin(a1-a2);
+  num2=(a1v*a1v*r1*(m1+m2));
+  num3=g*(m1+m2)*cos(a1);
+  num4 = a2v*a2v*r2*m2*cos(a1-a2);
+  den = r1 * (2*m1+m2-m2*cos(2*a1-2*a2));
+  a2a = (num1 * (num2 + num3 + num4))/ den;
+  image(canvas,0,0);
+  stroke(0);
+  strokeWeight(2);
+  translate(cx,cy);
+
+  float x1 = r1 * sin(a1);
+  float y1 = r1 * cos(a1);
+  float x2 = x1 + r2 * sin(a2);
+  float y2 = y1 + r2 * cos(a2);
+  a1v += a1a;
+  a2v += a2a;
+  a1 += a1v;
+  a2 += a2v;
+  stroke(255);
+  line(0,0,x1,y1);
+  line(x1,y1,x2,y2);
+  fill(255);
+  ellipse(x1,y1,m1,m1);
+  ellipse(x2,y2,m2,m2);
+  canvas.beginDraw();
+  canvas.translate(cx,cy);
+  canvas.colorMode(HSB);
+  canvas.stroke(hue,255,255);
+  canvas.line(px2, py2, x2,y2);
+  canvas.stroke(hue+180,255,255);
+  canvas.line(px1, py1, x1,y1);
+  canvas.endDraw();
+  px2 = x2;
+  py2 = y2;
+  px1 = x1;
+  py1 = y1;
+}
